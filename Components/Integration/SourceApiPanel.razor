@@ -20,15 +20,20 @@
     <div class="form-grid">
         <div class="form-row">
             <label>Source URL</label><br />
-            <input class="input-lg" @bind="Config.SourceUrl" />
+            <InputText class="input-lg" @bind-Value="Config.SourceUrl" />
+            <ValidationMessage For="@(() => Config.SourceUrl)" />
         </div>
 
         <div class="form-row">
             <label>HTTP method</label><br />
-            <select @bind="Config.SourceMethod">
+            <InputSelect @bind-Value="Config.SourceMethod">
                 <option value="GET">GET</option>
                 <option value="POST">POST</option>
-            </select>
+                <option value="PUT">PUT</option>
+                <option value="PATCH">PATCH</option>
+                <option value="DELETE">DELETE</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => Config.SourceMethod)" />
         </div>
     </div>
 </div>

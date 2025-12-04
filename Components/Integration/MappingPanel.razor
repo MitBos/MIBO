@@ -44,25 +44,28 @@
             <tbody>
             @for (var i = 0; i < Mappings.Count; i++)
             {
+                var index = i;
                 <tr>
                     <td>
-                        <input @bind="Mappings[i].SourceField" />
+                        <InputText @bind-Value="Mappings[index].SourceField" />
+                        <ValidationMessage For="@(() => Mappings[index].SourceField)" />
                     </td>
                     <td>
-                        <input @bind="Mappings[i].TargetField" />
+                        <InputText @bind-Value="Mappings[index].TargetField" />
+                        <ValidationMessage For="@(() => Mappings[index].TargetField)" />
                     </td>
                     <td>
                         <div style="display:flex; gap:0.25rem;">
                             <button class="btn-ghost btn-sm"
                                     type="button"
                                     title="Duplicate row"
-                                    @onclick="() => DuplicateRow(i)">
+                                    @onclick="() => DuplicateRow(index)">
                                 Duplicate
                             </button>
                             <button class="btn-ghost btn-sm"
                                     type="button"
                                     title="Remove row"
-                                    @onclick="() => OnRemoveMapping.InvokeAsync(i)">
+                                    @onclick="() => OnRemoveMapping.InvokeAsync(index)">
                                 Remove
                             </button>
                         </div>
