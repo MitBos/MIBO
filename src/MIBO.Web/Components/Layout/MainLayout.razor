@@ -1,0 +1,38 @@
+﻿@inherits LayoutComponentBase
+
+<div class="app-shell">
+    <header class="app-header">
+        <div class="app-header-left">
+            <a class="brand" href="@AppRoutes.IntegrationsListRoot">
+                <div class="brand-mark">M</div>
+                <div class="brand-text">
+                    <div class="brand-title">MIBO Integration Console</div>
+                    <div class="brand-subtitle">Control your integration landscape</div>
+                </div>
+            </a>
+        </div>
+
+        <nav class="app-nav">
+            <NavLink href="@AppRoutes.IntegrationsListRoot" class="nav-link" Match="NavLinkMatch.All">
+                Integrations
+            </NavLink>
+            <NavLink href="@AppRoutes.EditIntegration("NewIntegration")" class="nav-link">
+                New integration
+            </NavLink>
+        </nav>
+    </header>
+
+    <main class="app-main">
+        <div class="page-container">
+            @Body
+        </div>
+    </main>
+
+    <ToastContainer />
+
+    <footer class="app-footer">
+        <span>© @DateTime.Now.Year MIBO</span>
+        <span class="footer-divider">•</span>
+        <span>Built on .NET 10 & Blazor</span>
+    </footer>
+</div>
