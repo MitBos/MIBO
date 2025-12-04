@@ -1,6 +1,7 @@
 using MIBO.Application.Abstractions;
 using MIBO.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 
 namespace MIBO.Web.Endpoints;
 
