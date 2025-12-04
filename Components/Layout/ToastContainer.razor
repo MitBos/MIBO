@@ -1,0 +1,51 @@
+@implements IDisposable
+
+<div class="toast-container" aria-live="polite" aria-atomic="true">
+    @foreach (var toast in toasts.OrderBy(t => t.CreatedAt))
+    {
+        <div class="toast @GetCssClass(toast)">
+            <div class="toast-title">@toast.Title</div>
+            @if (!string.IsNullOrWhiteSpace(toast.Body))
+            {
+                <div class="toast-body">@toast.Body</div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private readonly List<ToastMessage> toasts = new();
+
+    public ToastContainer()
+    {
+        NotificationService.Instance.OnShow += HandleShow;
+    }
+
+    private void HandleShow(ToastMessage message)
+    {
+        toasts.Add(message);
+        StateHasChanged();
+
+        _ = Task.Delay(TimeSpan.FromSeconds(6))
+            .ContinueWith(_ => RemoveToast(message));
+    }
+
+    private void RemoveToast(ToastMessage message)
+    {
+        toasts.Remove(message);
+        InvokeAsync(StateHasChanged);
+    }
+
+    private static string GetCssClass(ToastMessage message) => message.Level switch
+    {
+        ToastLevel.Success => "toast-success",
+        ToastLevel.Warning => "toast-warning",
+        ToastLevel.Error => "toast-error",
+        _ => "toast-info"
+    };
+
+    public void Dispose()
+    {
+        NotificationService.Instance.OnShow -= HandleShow;
+    }
+}

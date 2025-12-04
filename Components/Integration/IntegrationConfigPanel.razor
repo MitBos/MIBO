@@ -24,16 +24,18 @@
 
     <div class="form-row">
         <label>Integration name</label><br />
-        <input class="input-md" @bind="Config.Name" />
+        <InputText class="input-md" @bind-Value="Config.Name" />
+        <ValidationMessage For="@(() => Config.Name)" />
         <div class="helper">This value identifies the integration.</div>
     </div>
 
     <div class="form-row mt-2">
         <label>Integration type</label><br />
-        <select class="input-md" @bind="Config.IntegrationType">
+        <InputSelect class="input-md" @bind-Value="Config.IntegrationType">
             <option value="Sync">Sync (source → target)</option>
             <option value="Facade">Facade (external calls MIBO)</option>
-        </select>
+        </InputSelect>
+        <ValidationMessage For="@(() => Config.IntegrationType)" />
         <div class="helper">
             Sync runs internal processes, Facade exposes a MIBO endpoint.
         </div>
@@ -59,9 +61,10 @@
                 Require API key
             </label>
             <div class="mt-1">
-                <input class="input-md"
-                       @bind="Config.ApiKey"
-                       placeholder="Enter API key" />
+                <InputText class="input-md"
+                           @bind-Value="Config.ApiKey"
+                           placeholder="Enter API key" />
+                <ValidationMessage For="@(() => Config.ApiKey)" />
             </div>
             <div class="helper">
                 Clients must send this key via header <code>X-MIBO-API-KEY</code>
@@ -71,7 +74,8 @@
 
         <div class="form-row mt-2">
             <label>Rate limit (requests per minute)</label><br />
-            <input class="input-md" type="number" @bind="Config.RateLimitPerMinute" />
+            <InputNumber class="input-md" @bind-Value="Config.RateLimitPerMinute" />
+            <ValidationMessage For="@(() => Config.RateLimitPerMinute)" />
             <div class="helper">
                 Leave empty or 0 to disable rate limiting.
             </div>
