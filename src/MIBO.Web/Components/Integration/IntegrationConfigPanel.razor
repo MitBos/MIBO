@@ -1,0 +1,88 @@
+@*
+    IntegrationConfigPanel.razor
+    ----------------------------
+    Purpose:
+    Displays and edits the core integration configuration:
+    - Integration name
+    - Integration type (Sync or Facade)
+    - Facade-specific settings (passthrough, API key, rate limit)
+
+    Parameters:
+    - Config (IntegrationConfig):
+        The integration configuration being edited.
+*@
+
+@using MIBO.Domain.Models
+
+<div class="panel">
+    <div class="panel-header">
+        <div>
+            <div class="panel-title">Integration configuration</div>
+            <div class="panel-subtitle">Basic metadata and behavior.</div>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <label>Integration name</label><br />
+        <InputText class="input-md" @bind-Value="Config.Name" />
+        <ValidationMessage For="@(() => Config.Name)" />
+        <div class="helper">This value identifies the integration.</div>
+    </div>
+
+    <div class="form-row mt-2">
+        <label>Integration type</label><br />
+        <InputSelect class="input-md" @bind-Value="Config.IntegrationType">
+            <option value="Sync">Sync (source → target)</option>
+            <option value="Facade">Facade (external calls MIBO)</option>
+        </InputSelect>
+        <ValidationMessage For="@(() => Config.IntegrationType)" />
+        <div class="helper">
+            Sync runs internal processes, Facade exposes a MIBO endpoint.
+        </div>
+    </div>
+
+    @if (Config.IntegrationType == "Facade")
+    {
+        <div class="form-row mt-2">
+            <label>Facade passthrough</label><br />
+            <label>
+                <input type="checkbox" @bind="Config.FacadePassThrough" />
+                Return source JSON as-is (no mapping applied)
+            </label>
+            <div class="helper">
+                When unchecked, mappings (if any) are applied to the source JSON.
+            </div>
+        </div>
+
+        <div class="form-row mt-2">
+            <label>API key requirement</label><br />
+            <label>
+                <input type="checkbox" @bind="Config.ApiKeyRequired" />
+                Require API key
+            </label>
+            <div class="mt-1">
+                <InputText class="input-md"
+                           @bind-Value="Config.ApiKey"
+                           placeholder="Enter API key" />
+                <ValidationMessage For="@(() => Config.ApiKey)" />
+            </div>
+            <div class="helper">
+                Clients must send this key via header <code>X-MIBO-API-KEY</code>
+                or query parameter <code>?api_key=...</code>.
+            </div>
+        </div>
+
+        <div class="form-row mt-2">
+            <label>Rate limit (requests per minute)</label><br />
+            <InputNumber class="input-md" @bind-Value="Config.RateLimitPerMinute" />
+            <ValidationMessage For="@(() => Config.RateLimitPerMinute)" />
+            <div class="helper">
+                Leave empty or 0 to disable rate limiting.
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public IntegrationConfig Config { get; set; } = default!;
+}

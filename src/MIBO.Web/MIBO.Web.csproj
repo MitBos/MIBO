@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>MIBO.Web</RootNamespace>
+    <RazorLangVersion>8.0</RazorLangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../MIBO.Domain/MIBO.Domain.csproj" />
+    <ProjectReference Include="../MIBO.Application/MIBO.Application.csproj" />
+    <ProjectReference Include="../MIBO.Infrastructure/MIBO.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Data/Integrations/**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

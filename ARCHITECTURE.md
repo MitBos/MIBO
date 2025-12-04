@@ -1,17 +1,23 @@
 # MIBO Architecture and Code Quality Overview
 
 ## High-level overview
-MIBO is a Blazor Server application that lets users configure and run "integrations"—pipelines that fetch JSON from a source API, optionally map fields, and optionally push results to a target API. The UI is implemented with Razor components and talks to minimal API endpoints that persist integration definitions and execute runs via injected services (storage, API caller, mapping engine). Domain models live in `Models/`, while sample configuration data sits under `Data/`.
+MIBO is a Blazor Server application that lets users configure and run "integrations"—pipelines that fetch JSON from a source API, optionally map fields, and optionally push results to a target API. The UI is implemented with Razor components and talks to minimal API endpoints that persist integration definitions and execute runs via injected services (storage, API caller, mapping engine). Domain models now live in `src/MIBO.Domain/`, while sample configuration data sits under `src/MIBO.Web/Data/` and is copied to the web output.
 
-## Project structure
+## Solution layout
+- `MIBO.sln`: solution composing the web UI, domain model, application abstractions, infrastructure, and tests.
+- `src/MIBO.Domain`: domain DTOs such as `IntegrationConfig`, `FieldMapping`, `ApiCallRequest/Result`, and `RunIntegrationResponse`.
+- `src/MIBO.Application`: service abstractions (`IApiCaller`, `IIntegrationConfigStorage`, `IMappingEngine`).
+- `src/MIBO.Infrastructure`: concrete implementations of the abstractions (file-based storage, HTTP caller, mapping engine) and DI helpers.
+- `src/MIBO.Web`: Razor components, routing, minimal API endpoints, UI-specific services, and seed data (`Data/Integrations/NewIntegration.json`).
+- `tests/MIBO.Tests`: xUnit suite covering persistence, mapping, and editor state validation.
+
+### Web project structure
 - `Components/`: Blazor UI written in Razor.
   - `App.razor` and `Routes.razor` set up the root document and routing.
   - `Layout/`: shell elements such as `MainLayout`, `NavMenu`, and `ReconnectModal` plus their styling and JS helpers.
   - `Pages/`: top-level pages (`IntegrationsList`, `EditIntegration`, `Error`, `NotFound`).
   - `Integration/`: reusable panels for editing integration metadata, API settings, mappings, and showing run results.
 - `Endpoints/`: minimal API registrations that expose CRUD-style endpoints and a "run" operation for integrations.
-- `Models/`: DTO-style types that represent integrations, mappings, API requests/results, and request payloads for duplication/runs.
-- `Data/`: a default integration JSON file (`NewIntegration.json`) used to seed new configs.
 
 ## Front-end architecture
 - **Routing and layout**: `Components/App.razor` defines the HTML shell and loads Blazor scripts. `Components/Routes.razor` wires the router and a default `MainLayout` with header navigation and footer. `ReconnectModal` provides offline/connection recovery UX via a small JS module.
