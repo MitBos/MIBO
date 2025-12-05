@@ -69,6 +69,8 @@ else
 @code {
     [Parameter] public string? Name { get; set; }
 
+    [Inject] private IServiceProvider Services { get; set; } = default!;
+
     private readonly IntegrationEditorState EditorState = new();
     private EditContext? editContext;
 
@@ -103,7 +105,7 @@ else
 
             EditorState.SetConfig(config);
             editContext = new EditContext(EditorState.Config);
-            editContext.EnableDataAnnotationsValidation();
+            editContext.EnableDataAnnotationsValidation(Services);
         }
         catch (Exception ex)
         {
@@ -143,7 +145,7 @@ else
             {
                 EditorState.SetConfig(saved);
                 editContext = new EditContext(EditorState.Config);
-                editContext.EnableDataAnnotationsValidation();
+                editContext.EnableDataAnnotationsValidation(Services);
                 NotificationService.Instance.ShowSuccess("Configuration saved", $"Integration '{EditorState.Config.Name}' saved.");
             }
         }
