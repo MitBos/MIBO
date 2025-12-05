@@ -57,7 +57,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>11372</FileLength>
-      <LastWriteTime>Fri, 05 Dec 2025 10:08:12 GMT</LastWriteTime>
+      <LastWriteTime>Fri, 05 Dec 2025 12:31:30 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Mibo.Web.ioknee1dh5.bundle.scp.css'))</OriginalItemSpec>
     </StaticWebAsset>
   </ItemGroup>
