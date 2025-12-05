@@ -1,4 +1,4 @@
-/* _content/MIBO.Web/Components/Layout/MainLayout.razor.rz.scp.css */
+/* _content/Mibo.Web/Components/Layout/MainLayout.razor.rz.scp.css */
 .page[b-6mwo68xuho] {
     position: relative;
     display: flex;
@@ -97,7 +97,7 @@ main[b-6mwo68xuho] {
         right: 0.75rem;
         top: 0.5rem;
     }
-/* _content/MIBO.Web/Components/Layout/NavMenu.razor.rz.scp.css */
+/* _content/Mibo.Web/Components/Layout/NavMenu.razor.rz.scp.css */
 .navbar-toggler[b-tjrmdvryzd] {
     appearance: none;
     cursor: pointer;
@@ -203,7 +203,7 @@ main[b-6mwo68xuho] {
         overflow-y: auto;
     }
 }
-/* _content/MIBO.Web/Components/Layout/ReconnectModal.razor.rz.scp.css */
+/* _content/Mibo.Web/Components/Layout/ReconnectModal.razor.rz.scp.css */
 .components-reconnect-first-attempt-visible[b-vcm6gg0w0i],
 .components-reconnect-repeated-attempt-visible[b-vcm6gg0w0i],
 .components-reconnect-failed-visible[b-vcm6gg0w0i],
@@ -361,7 +361,7 @@ main[b-6mwo68xuho] {
         opacity: 0;
     }
 }
-/* _content/MIBO.Web/Components/Layout/ToastContainer.razor.rz.scp.css */
+/* _content/Mibo.Web/Components/Layout/ToastContainer.razor.rz.scp.css */
 .toast-container[b-8sr8dzikzx] {
     position: fixed;
     top: 1.5rem;
