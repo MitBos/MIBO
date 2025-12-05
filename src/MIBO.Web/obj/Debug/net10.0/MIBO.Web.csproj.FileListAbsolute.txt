@@ -28,9 +28,6 @@ C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.
 C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.Web\obj\Debug\net10.0\scopedcss\Components\Layout\ToastContainer.razor.rz.scp.css
 C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.Web\obj\Debug\net10.0\scopedcss\bundle\MIBO.Web.styles.css
 C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.Web\obj\Debug\net10.0\scopedcss\projectbundle\MIBO.Web.bundle.scp.css
-C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.Web\obj\Debug\net10.0\compressed\mdg86c3ow7-{0}-13ja33weya-13ja33weya.gz
-C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.Web\obj\Debug\net10.0\compressed\auresw1nkf-{0}-0zww0e0bkg-0zww0e0bkg.gz
-C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.Web\obj\Debug\net10.0\compressed\87x1w86ikx-{0}-0zww0e0bkg-0zww0e0bkg.gz
 C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.Web\obj\Debug\net10.0\staticwebassets.build.json
 C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.Web\obj\Debug\net10.0\staticwebassets.build.json.cache
 C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.Web\obj\Debug\net10.0\staticwebassets.development.json
@@ -48,3 +45,10 @@ C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.
 C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.Web\obj\Debug\net10.0\MIBO.Web.pdb
 C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.Web\obj\Debug\net10.0\ref\MIBO.Web.dll
 C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.Web\obj\Debug\net10.0\Mibo.Web.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.Web\bin\Debug\net10.0\Mibo.Web.exe
+C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.Web\bin\Debug\net10.0\Mibo.Web.runtimeconfig.json
+C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.Web\obj\Debug\net10.0\compressed\9kxe7452np-{0}-13ja33weya-13ja33weya.gz
+C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.Web\obj\Debug\net10.0\compressed\pejnrkc2ex-{0}-ioknee1dh5-ioknee1dh5.gz
+C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.Web\obj\Debug\net10.0\compressed\lrzq4nuzy2-{0}-ioknee1dh5-ioknee1dh5.gz
+C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.Web\obj\Debug\net10.0\Mibo.Web.genruntimeconfig.cache
+C:\Users\MitchBos\OneDrive - RISA IT\Documenten\Prive\MIBOProject\MIBO\src\MIBO.Web\obj\Debug\net10.0\compressed\wlv06v6nbg-{0}-jks5l5hlz8-jks5l5hlz8.gz

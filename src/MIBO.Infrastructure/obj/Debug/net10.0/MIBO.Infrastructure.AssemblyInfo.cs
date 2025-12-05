@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MIBO.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+038fd09ea019a109d1d6052222bac2a3b4f9b485")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2fdbb9883bda3df7ad0f26cb1b4f4a4462a05d6c")]
 [assembly: System.Reflection.AssemblyProductAttribute("MIBO.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MIBO.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
