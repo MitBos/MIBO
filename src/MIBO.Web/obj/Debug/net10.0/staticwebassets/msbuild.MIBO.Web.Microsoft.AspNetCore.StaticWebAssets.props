@@ -2,9 +2,9 @@
   <ItemGroup>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\app.css'))">
       <SourceType>Package</SourceType>
-      <SourceId>Mibo.Web</SourceId>
+      <SourceId>MIBO.Web</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/Mibo.Web</BasePath>
+      <BasePath>_content/MIBO.Web</BasePath>
       <RelativePath>app.css</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
@@ -22,9 +22,9 @@
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Components\Layout\ReconnectModal.razor.js'))">
       <SourceType>Package</SourceType>
-      <SourceId>Mibo.Web</SourceId>
+      <SourceId>MIBO.Web</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/Mibo.Web</BasePath>
+      <BasePath>_content/MIBO.Web</BasePath>
       <RelativePath>Components/Layout/ReconnectModal.razor.js</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
@@ -40,25 +40,25 @@
       <LastWriteTime>Fri, 05 Dec 2025 09:48:02 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Components\Layout\ReconnectModal.razor.js'))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Mibo.Web.ioknee1dh5.bundle.scp.css'))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\MIBO.Web.0zww0e0bkg.bundle.scp.css'))">
       <SourceType>Package</SourceType>
-      <SourceId>Mibo.Web</SourceId>
+      <SourceId>MIBO.Web</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/Mibo.Web</BasePath>
-      <RelativePath>Mibo.Web.ioknee1dh5.bundle.scp.css</RelativePath>
+      <BasePath>_content/MIBO.Web</BasePath>
+      <RelativePath>MIBO.Web.0zww0e0bkg.bundle.scp.css</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>Reference</AssetMode>
       <AssetRole>Primary</AssetRole>
       <RelatedAsset></RelatedAsset>
       <AssetTraitName>ScopedCss</AssetTraitName>
       <AssetTraitValue>ProjectBundle</AssetTraitValue>
-      <Fingerprint>ioknee1dh5</Fingerprint>
-      <Integrity>ct5pZzAbXNtFO/xrTzEo9BITNUg8I8A+WEK28grRmoQ=</Integrity>
+      <Fingerprint>0zww0e0bkg</Fingerprint>
+      <Integrity>7Cb9/whYOzUGdqbEtl0kpv6jPt0Bv3nDoldlXtlewxo=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>11372</FileLength>
-      <LastWriteTime>Fri, 05 Dec 2025 12:31:30 GMT</LastWriteTime>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Mibo.Web.ioknee1dh5.bundle.scp.css'))</OriginalItemSpec>
+      <LastWriteTime>Fri, 05 Dec 2025 12:33:41 GMT</LastWriteTime>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\MIBO.Web.0zww0e0bkg.bundle.scp.css'))</OriginalItemSpec>
     </StaticWebAsset>
   </ItemGroup>
 </Project>

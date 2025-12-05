@@ -6,14 +6,14 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v10.0": {
-      "Mibo.Web/1.0.0": {
+      "MIBO.Web/1.0.0": {
         "dependencies": {
           "MIBO.Application": "1.0.0",
           "MIBO.Domain": "1.0.0",
           "MIBO.Infrastructure": "1.0.0"
         },
         "runtime": {
-          "Mibo.Web.dll": {}
+          "MIBO.Web.dll": {}
         }
       },
       "MIBO.Application/1.0.0": {
@@ -50,7 +50,7 @@
     }
   },
   "libraries": {
-    "Mibo.Web/1.0.0": {
+    "MIBO.Web/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
