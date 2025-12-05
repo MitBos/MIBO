@@ -1,0 +1,30 @@
+{
+  "name": "NewIntegration",
+  "integrationType": "Sync",
+  "facadePassThrough": true,
+  "apiKeyRequired": false,
+  "apiKey": null,
+  "rateLimitPerMinute": null,
+  "sourceUrl": "https://jsonplaceholder.typicode.com/posts/1",
+  "sourceMethod": "GET",
+  "targetUrl": null,
+  "targetMethod": "POST",
+  "mappings": [
+    {
+      "sourceField": "userId",
+      "targetField": "EmployeeId"
+    },
+    {
+      "sourceField": "id",
+      "targetField": "ExternalId"
+    },
+    {
+      "sourceField": "title",
+      "targetField": "Title"
+    },
+    {
+      "sourceField": "body",
+      "targetField": "Description"
+    }
+  ]
+}

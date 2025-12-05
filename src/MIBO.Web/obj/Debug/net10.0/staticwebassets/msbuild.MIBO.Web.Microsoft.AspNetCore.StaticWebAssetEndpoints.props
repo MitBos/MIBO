@@ -1,0 +1,28 @@
+﻿<Project>
+  <ItemGroup>
+    <StaticWebAssetEndpoint Include="_content/MIBO.Web/Components/Layout/ReconnectModal.13ja33weya.razor.js">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Components\Layout\ReconnectModal.razor.js'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"13ja33weya"},{"Name":"integrity","Value":"sha256-4zGYCWZ4pfXdYacNs7XaH1BXGvludoT6JCkX9NZucgI="},{"Name":"label","Value":"_content/MIBO.Web/Components/Layout/ReconnectModal.razor.js"},{"Name":"script-type","Value":"module"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"2364"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u00224zGYCWZ4pfXdYacNs7XaH1BXGvludoT6JCkX9NZucgI=\u0022"},{"Name":"Last-Modified","Value":"Fri, 05 Dec 2025 09:48:02 GMT"},{"Name":"Vary","Value":"Accept-Encoding"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/MIBO.Web/Components/Layout/ReconnectModal.razor.js">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Components\Layout\ReconnectModal.razor.js'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-4zGYCWZ4pfXdYacNs7XaH1BXGvludoT6JCkX9NZucgI="},{"Name":"script-type","Value":"module"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"2364"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u00224zGYCWZ4pfXdYacNs7XaH1BXGvludoT6JCkX9NZucgI=\u0022"},{"Name":"Last-Modified","Value":"Fri, 05 Dec 2025 09:48:02 GMT"},{"Name":"Vary","Value":"Accept-Encoding"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/MIBO.Web/MIBO.Web.0zww0e0bkg.bundle.scp.css">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\MIBO.Web.0zww0e0bkg.bundle.scp.css'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"0zww0e0bkg"},{"Name":"integrity","Value":"sha256-7Cb9/whYOzUGdqbEtl0kpv6jPt0Bv3nDoldlXtlewxo="},{"Name":"label","Value":"_content/MIBO.Web/MIBO.Web.bundle.scp.css"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"11372"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u00227Cb9/whYOzUGdqbEtl0kpv6jPt0Bv3nDoldlXtlewxo=\u0022"},{"Name":"Last-Modified","Value":"Fri, 05 Dec 2025 09:49:46 GMT"},{"Name":"Vary","Value":"Accept-Encoding"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/MIBO.Web/MIBO.Web.bundle.scp.css">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\MIBO.Web.0zww0e0bkg.bundle.scp.css'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-7Cb9/whYOzUGdqbEtl0kpv6jPt0Bv3nDoldlXtlewxo="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"11372"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u00227Cb9/whYOzUGdqbEtl0kpv6jPt0Bv3nDoldlXtlewxo=\u0022"},{"Name":"Last-Modified","Value":"Fri, 05 Dec 2025 09:49:46 GMT"},{"Name":"Vary","Value":"Accept-Encoding"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+  </ItemGroup>
+</Project>

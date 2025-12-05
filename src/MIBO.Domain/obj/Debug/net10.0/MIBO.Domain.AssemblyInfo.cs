@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MIBO.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3af2012e934b4ec631a6a778f4951bfb20f91ef3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+038fd09ea019a109d1d6052222bac2a3b4f9b485")]
 [assembly: System.Reflection.AssemblyProductAttribute("MIBO.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MIBO.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
