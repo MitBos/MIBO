@@ -4,7 +4,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>MIBO.Web</RootNamespace>
-    <RazorLangVersion>10.0</RazorLangVersion>
+    <RazorLangVersion>Latest</RazorLangVersion>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../MIBO.Domain/MIBO.Domain.csproj" />
