@@ -36,6 +36,8 @@ public class FileIntegrationConfigStorage : IIntegrationConfigStorage
 
             return Directory.EnumerateFiles(_directory, "*.json")
                 .Select(Path.GetFileNameWithoutExtension)
+                .Where(name => name is not null)
+                .Select(name => name!)
                 .OrderBy(name => name)
                 .ToList();
         }
