@@ -1,3 +1,4 @@
+﻿@* Summary: Edits core integration metadata such as name, type, and facade settings. *@
 @*
     IntegrationConfigPanel.razor
     ----------------------------
@@ -32,7 +33,7 @@
     <div class="form-row mt-2">
         <label>Integration type</label><br />
         <InputSelect class="input-md" @bind-Value="Config.IntegrationType">
-            <option value="Sync">Sync (source → target)</option>
+            <option value="Sync">Sync (source -> target)</option>
             <option value="Facade">Facade (external calls MIBO)</option>
         </InputSelect>
         <ValidationMessage For="@(() => Config.IntegrationType)" />
@@ -86,3 +87,5 @@
 @code {
     [Parameter] public IntegrationConfig Config { get; set; } = default!;
 }
+
+

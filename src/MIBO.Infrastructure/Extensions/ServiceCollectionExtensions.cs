@@ -1,3 +1,4 @@
+﻿// Summary: Registers infrastructure services (storage, HTTP caller, mapping engine) into DI.
 using Microsoft.Extensions.DependencyInjection;
 using MIBO.Application.Abstractions;
 using MIBO.Infrastructure.Services;
@@ -17,3 +18,4 @@ public static class ServiceCollectionExtensions
         return services;
     }
 }
+

@@ -1,3 +1,4 @@
+﻿// Summary: Implements IApiCaller using HttpClient to send configured HTTP requests and capture responses.
 using System.Net.Http.Json;
 using MIBO.Application.Abstractions;
 using MIBO.Domain.Models;
@@ -47,3 +48,4 @@ public class HttpApiCaller : IApiCaller
         return result;
     }
 }
+

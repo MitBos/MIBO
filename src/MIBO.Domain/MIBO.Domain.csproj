@@ -1,3 +1,4 @@
+<!-- Summary: Declares the domain model project targeting .NET 10 with nullable reference types and implicit usings. -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>

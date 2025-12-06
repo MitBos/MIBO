@@ -1,4 +1,5 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@* Summary: Legacy nav menu component used by the template for small-screen navigation. *@
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">MIBO</a>
     </div>
@@ -15,10 +16,11 @@
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="@AppRoutes.EditIntegration("NewIntegration")">
+            <NavLink class="nav-link" href="@AppRoutes.EditIntegration('NewIntegration')">
                 <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> New integration
             </NavLink>
         </div>
     </nav>
 </div>
+
 

@@ -1,3 +1,4 @@
+﻿// Summary: JSON file-based implementation of IIntegrationConfigStorage with concurrency control.
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using MIBO.Application.Abstractions;
@@ -104,3 +105,4 @@ public class FileIntegrationConfigStorage : IIntegrationConfigStorage
         return Path.Combine(_directory, $"{safeName}.json");
     }
 }
+

@@ -1,3 +1,4 @@
+﻿/* Summary: Animations and visibility rules for the Blazor reconnect modal dialog. */
 .components-reconnect-first-attempt-visible,
 .components-reconnect-repeated-attempt-visible,
 .components-reconnect-failed-visible,
@@ -155,3 +156,4 @@
         opacity: 0;
     }
 }
+

@@ -1,3 +1,4 @@
+<!-- Summary: Defines the Blazor Server project, target framework, and references to domain/application/infrastructure projects and content. -->
 <Project Sdk="Microsoft.NET.Sdk.Razor">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -5,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>MIBO.Web</RootNamespace>
     <RazorLangVersion>Latest</RazorLangVersion>
+    <RequiresAspNetWebAssets>true</RequiresAspNetWebAssets> 
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>

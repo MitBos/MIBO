@@ -1,3 +1,4 @@
+﻿// Summary: Defines persistence operations for integration configurations.
 using MIBO.Domain.Models;
 
 namespace MIBO.Application.Abstractions;
@@ -9,3 +10,4 @@ public interface IIntegrationConfigStorage
     Task SaveAsync(IntegrationConfig config, CancellationToken cancellationToken = default);
     Task DeleteAsync(string name, CancellationToken cancellationToken = default);
 }
+

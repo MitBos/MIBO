@@ -1,3 +1,4 @@
+﻿// Summary: Holds the current integration config, validation helpers, and run results for the edit UI.
 using System.ComponentModel.DataAnnotations;
 using MIBO.Domain.Models;
 
@@ -57,3 +58,4 @@ public class IntegrationEditorState
         return isValid;
     }
 }
+

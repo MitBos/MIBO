@@ -1,3 +1,4 @@
+﻿/* Summary: Styles the collapsible sidebar/top navigation used in the legacy nav component. */
 .navbar-toggler {
     appearance: none;
     cursor: pointer;
@@ -103,3 +104,4 @@
         overflow-y: auto;
     }
 }
+

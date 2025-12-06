@@ -1,3 +1,4 @@
+﻿// Summary: Centralized route helpers for navigation and API endpoints.
 namespace MIBO.Web.Routing;
 
 public static class AppRoutes
@@ -15,3 +16,4 @@ public static class ApiRoutes
     public const string RunIntegration = $"{IntegrationsBase}/run";
     public const string DuplicateIntegration = $"{IntegrationsBase}/duplicate";
 }
+

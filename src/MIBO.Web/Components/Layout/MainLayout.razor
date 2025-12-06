@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+@* Summary: App-wide shell with branding, navigation, main content container, toast host, and footer. *@
+@inherits LayoutComponentBase
 
 <div class="app-shell">
     <header class="app-header">
@@ -16,7 +17,7 @@
             <NavLink href="@AppRoutes.IntegrationsListRoot" class="nav-link" Match="NavLinkMatch.All">
                 Integrations
             </NavLink>
-            <NavLink href="@AppRoutes.EditIntegration("NewIntegration")" class="nav-link">
+            <NavLink href="@AppRoutes.EditIntegration('NewIntegration')" class="nav-link">
                 New integration
             </NavLink>
         </nav>
@@ -31,8 +32,8 @@
     <ToastContainer />
 
     <footer class="app-footer">
-        <span>© @DateTime.Now.Year MIBO</span>
-        <span class="footer-divider">•</span>
-        <span>Built on .NET 10 & Blazor</span>
+        <span>(c) @DateTime.Now.Year MIBO</span>
+        <span class="footer-divider">|</span>
+        <span>Built on .NET 10 &amp; Blazor</span>
     </footer>
 </div>

@@ -1,3 +1,4 @@
+<!-- Summary: Configures the application abstraction project, targeting .NET 10 and referencing the domain project. -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>

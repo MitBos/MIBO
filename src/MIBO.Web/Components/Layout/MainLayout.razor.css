@@ -1,3 +1,4 @@
+﻿/* Summary: Styles for the overall app shell, responsive layout, and error UI. */
 .page {
     position: relative;
     display: flex;
@@ -96,3 +97,4 @@ main {
         right: 0.75rem;
         top: 0.5rem;
     }
+

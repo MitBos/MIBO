@@ -1,3 +1,4 @@
+﻿<!-- Summary: Simple gradient M icon used as the site favicon. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="MIBO icon">
   <defs>
     <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
@@ -8,3 +9,4 @@
   <rect width="64" height="64" rx="12" fill="url(#g)" />
   <path d="M18 44V20h8l6 10 6-10h8v24h-8V32l-6 10-6-10v12z" fill="#ffffff" />
 </svg>
+

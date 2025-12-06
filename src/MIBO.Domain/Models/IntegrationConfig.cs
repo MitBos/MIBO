@@ -1,3 +1,4 @@
+﻿// Summary: Defines the integration configuration contract and validation rules for source/target calls and mappings.
 using System.ComponentModel.DataAnnotations;
 
 namespace MIBO.Domain.Models;
@@ -40,3 +41,4 @@ public class IntegrationConfig
     [MinLength(0)]
     public List<FieldMapping> Mappings { get; set; } = new();
 }
+

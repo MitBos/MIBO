@@ -1,3 +1,4 @@
+﻿@* Summary: Renders queued toast messages and auto-dismisses them after a short duration. *@
 @implements IDisposable
 
 <div class="toast-container" aria-live="polite" aria-atomic="true">
@@ -49,3 +50,4 @@
         NotificationService.Instance.OnShow -= HandleShow;
     }
 }
+

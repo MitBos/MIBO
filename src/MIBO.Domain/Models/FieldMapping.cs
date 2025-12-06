@@ -1,3 +1,4 @@
+﻿// Summary: Represents a mapping between a source JSON path and a target JSON path with validation.
 using System.ComponentModel.DataAnnotations;
 
 namespace MIBO.Domain.Models;
@@ -12,3 +13,4 @@ public class FieldMapping
     [StringLength(128, ErrorMessage = "Target field is too long.")]
     public string TargetField { get; set; } = string.Empty;
 }
+

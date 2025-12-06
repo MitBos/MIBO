@@ -1,3 +1,4 @@
+﻿// Summary: Maps REST endpoints for listing, loading, saving, running, deleting, and duplicating integrations.
 using MIBO.Application.Abstractions;
 using MIBO.Domain.Models;
 using Microsoft.AspNetCore.Builder;
@@ -108,7 +109,7 @@ public static class IntegrationApiEndpoints
             return Results.Ok(response);
         });
 
-                // DELETE /api/integrations/{name} -> delete config
+        // DELETE /api/integrations/{name} -> delete config
         group.MapDelete("{name}", async (string name, [FromServices] IIntegrationConfigStorage storage) =>
         {
             await storage.DeleteAsync(name);
@@ -158,3 +159,4 @@ public static class IntegrationApiEndpoints
         return endpoints;
     }
 }
+

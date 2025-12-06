@@ -1,3 +1,4 @@
+﻿// Summary: Captures the outcome of an API call including status, body, and diagnostic logs/errors.
 namespace MIBO.Domain.Models;
 
 public class ApiCallResult
@@ -8,3 +9,4 @@ public class ApiCallResult
     public List<string> Logs { get; set; } = new();
     public string? ErrorMessage { get; set; }
 }
+

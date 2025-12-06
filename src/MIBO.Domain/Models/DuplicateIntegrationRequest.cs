@@ -1,3 +1,4 @@
+﻿// Summary: Request payload used to duplicate an existing integration configuration to a new name.
 namespace MIBO.Domain.Models;
 
 public class DuplicateIntegrationRequest

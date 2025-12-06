@@ -1,3 +1,4 @@
+﻿// Summary: Central toast notification service exposing convenience methods for different severity levels.
 namespace MIBO.Web.Services;
 
 public enum ToastLevel
@@ -29,3 +30,4 @@ public class NotificationService
         OnShow?.Invoke(new ToastMessage(title, body, level, DateTimeOffset.UtcNow));
     }
 }
+

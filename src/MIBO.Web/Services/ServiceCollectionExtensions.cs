@@ -1,3 +1,4 @@
+﻿// Summary: Adds infrastructure, singleton notification service, and integration editor state to DI.
 using MIBO.Infrastructure.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,3 +15,4 @@ public static class ServiceCollectionExtensions
         return services;
     }
 }
+

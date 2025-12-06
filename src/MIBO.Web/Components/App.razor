@@ -1,3 +1,4 @@
+@* Summary: Defines the Blazor Server host page, linking styles, bootstrap CDN, import map, and root routing. *@
 @using Microsoft.AspNetCore.Components.Web
 @inject NavigationManager NavigationManager
 
@@ -26,10 +27,8 @@
 
 <body>
     <Routes />
-
     <ReconnectModal />
-
-    <script src="_framework/blazor.web.js"></script>
+        <script src="/_framework/blazor.web.js"></script>
 </body>
 
 </html>

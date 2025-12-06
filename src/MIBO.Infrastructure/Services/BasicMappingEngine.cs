@@ -1,3 +1,4 @@
+﻿// Summary: Minimal JSON mapping engine that projects configured source paths into a flat target object.
 using System.Text.Json;
 using MIBO.Application.Abstractions;
 using MIBO.Domain.Models;
@@ -56,3 +57,4 @@ public class BasicMappingEngine : IMappingEngine
         };
     }
 }
+

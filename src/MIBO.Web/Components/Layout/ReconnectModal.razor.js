@@ -1,3 +1,4 @@
+﻿// Summary: Handles Blazor reconnect/resume events and updates the reconnect dialog behaviour.
 // Set up event handlers
 const reconnectModal = document.getElementById("components-reconnect-modal");
 reconnectModal.addEventListener("components-reconnect-state-changed", handleReconnectStateChanged);
@@ -61,3 +62,4 @@ async function retryWhenDocumentBecomesVisible() {
         await retry();
     }
 }
+
