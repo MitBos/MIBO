@@ -38,13 +38,8 @@ else
 
         <IntegrationConfigPanel Config="EditorState.Config" />
 
-        <SourceApiPanel Config="EditorState.Config" />
-
-        <TargetApiPanel Config="EditorState.Config" />
-
-        <MappingPanel Mappings="EditorState.Config.Mappings"
-                      OnAddMapping="EditorState.AddMapping"
-                      OnRemoveMapping="EditorState.RemoveMapping" />
+        <MethodConfigPanel Config="EditorState.Config"
+                           ApiSystems="apiSystems" />
 
         <div class="mt-3">
             <button type="button"
@@ -73,6 +68,7 @@ else
     [Inject] private IServiceProvider Services { get; set; } = default!;
 
     private readonly IntegrationEditorState EditorState = new();
+    private readonly List<ApiSystem> apiSystems = new();
     private EditContext? editContext;
 
     private bool isLoading = true;
@@ -92,21 +88,8 @@ else
 
         try
         {
-            var url = BuildApiUri(ApiRoutes.Integration(nameToLoad));
-            var response = await Http.GetAsync(url);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                errorMessage = $"Error loading integration '{nameToLoad}': {(int)response.StatusCode} {response.ReasonPhrase}";
-                return;
-            }
-
-            var loaded = await response.Content.ReadFromJsonAsync<IntegrationConfig>();
-            var config = loaded ?? new IntegrationConfig { Name = nameToLoad };
-
-            EditorState.SetConfig(config);
-            editContext = new EditContext(EditorState.Config);
-            editContext.EnableDataAnnotationsValidation(Services);
+            await LoadIntegrationAsync(nameToLoad);
+            await LoadCatalogDataAsync();
         }
         catch (Exception ex)
         {
@@ -216,5 +199,46 @@ else
 
         errorMessage = null;
         return true;
+    }
+
+    private async Task LoadIntegrationAsync(string nameToLoad)
+    {
+        var url = BuildApiUri(ApiRoutes.Integration(nameToLoad));
+        var response = await Http.GetAsync(url);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            errorMessage = $"Error loading integration '{nameToLoad}': {(int)response.StatusCode} {response.ReasonPhrase}";
+            return;
+        }
+
+        var loaded = await response.Content.ReadFromJsonAsync<IntegrationConfig>();
+        var config = loaded ?? new IntegrationConfig { Name = nameToLoad };
+
+        EditorState.SetConfig(config);
+        editContext = new EditContext(EditorState.Config);
+        editContext.EnableDataAnnotationsValidation(Services);
+    }
+
+    private async Task LoadCatalogDataAsync()
+    {
+        try
+        {
+            var systemsResponse = await Http.GetAsync(BuildApiUri(ApiRoutes.ApiSystemsBase));
+            if (systemsResponse.IsSuccessStatusCode)
+            {
+                var systems = await systemsResponse.Content.ReadFromJsonAsync<List<ApiSystem>>() ?? new List<ApiSystem>();
+                apiSystems.Clear();
+                apiSystems.AddRange(systems);
+            }
+            else
+            {
+            NotificationService.Instance.ShowWarning("API catalog unavailable", $"Failed to load API systems: {(int)systemsResponse.StatusCode} {systemsResponse.ReasonPhrase}");
+            }
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Instance.ShowWarning("API catalog unavailable", ex.Message);
+        }
     }
 }

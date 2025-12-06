@@ -1,0 +1,11 @@
+{
+  "sourceSystemKey": "Microsoft",
+  "sourceEndpointKey": "CustomersList",
+  "targets": [
+    {
+      "targetSystemKey": "Microsoft",
+      "targetEndpointKey": "CustomerCreate",
+      "mappingReference": "Mappings/CustomersListToCreate.json"
+    }
+  ]
+}

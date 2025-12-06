@@ -1,0 +1,395 @@
+@* Summary: Manage relations between source and target endpoints with mapping references. *@
+@page "/app/endpoint-relations"
+@rendermode InteractiveServer
+
+@using MIBO.Domain.Models
+
+@inject HttpClient Http
+@inject NavigationManager Nav
+
+<h1 class="page-title">Endpoint relations</h1>
+<div class="page-subtitle">
+    Link source endpoints to target endpoints and capture mapping references for each relation.
+</div>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">
+        <strong>Error:</strong> @errorMessage
+    </div>
+}
+
+@if (isLoading)
+{
+    <div>Loading relations...</div>
+}
+else
+{
+    <div class="panel">
+        <div class="panel-header">
+            <div>
+                <div class="panel-title">Existing relations</div>
+                <div class="panel-subtitle">Source endpoints with their configured targets.</div>
+            </div>
+        </div>
+
+        @if (relations.Count == 0)
+        {
+            <p class="helper">No relations saved yet.</p>
+        }
+        else
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Source</th>
+                        <th>Targets</th>
+                        <th class="col-narrow">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var relation in relations)
+                    {
+                        <tr>
+                            <td>
+                                <div><strong>@relation.SourceSystemKey</strong></div>
+                                <div class="helper">@relation.SourceEndpointKey</div>
+                            </td>
+                            <td>
+                                @if (relation.Targets.Count == 0)
+                                {
+                                    <span class="helper">No targets</span>
+                                }
+                                else
+                                {
+                                    @foreach (var target in relation.Targets)
+                                    {
+                                        <div class="helper">
+                                            <strong>@target.TargetSystemKey</strong> / @target.TargetEndpointKey
+                                            @if (!string.IsNullOrWhiteSpace(target.MappingReference))
+                                            {
+                                                <span> (map: @target.MappingReference)</span>
+                                            }
+                                            @if (target.Mappings?.Count > 0)
+                                            {
+                                                <span> (@target.Mappings.Count mapping(s))</span>
+                                            }
+                                        </div>
+                                    }
+                                }
+                            </td>
+                            <td>
+                                <div style="display:flex; gap:0.35rem;">
+                                    <button type="button" class="btn-ghost btn-sm" @onclick="() => BeginEdit(relation)">Edit</button>
+                                    <button type="button" class="btn-ghost btn-sm" @onclick="() => DeleteRelationAsync(relation.SourceSystemKey, relation.SourceEndpointKey)">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+
+    <div class="panel">
+        <div class="panel-header">
+            <div>
+                <div class="panel-title">Edit relation</div>
+                <div class="panel-subtitle">Select a source endpoint and add one or more targets.</div>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-row">
+                <label>Source system</label>
+                <select class="input-md" @onchange="OnSourceSystemChanged" value="@editingRelation.SourceSystemKey">
+                    @foreach (var system in systems)
+                    {
+                        <option value="@system.Key">@system.DisplayName (@system.Key)</option>
+                    }
+                </select>
+            </div>
+            <div class="form-row">
+                <label>Source endpoint</label>
+                <select class="input-md" @bind="editingRelation.SourceEndpointKey">
+                    @foreach (var endpoint in GetEndpoints(editingRelation.SourceSystemKey))
+                    {
+                        <option value="@endpoint.Key">@endpoint.DisplayName (@endpoint.Key)</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="section-heading">Targets</div>
+        @if (editingRelation.Targets.Count == 0)
+        {
+            <p class="helper">No targets added yet.</p>
+        }
+        else
+        {
+            @for (var i = 0; i < editingRelation.Targets.Count; i++)
+            {
+                var target = editingRelation.Targets[i];
+                <div class="form-grid" style="align-items:flex-end; margin-bottom:0.5rem;">
+                    <div class="form-row">
+                        <label>Target system</label>
+                        <select class="input-md" @onchange="e => OnTargetSystemChanged(i, e)" value="@target.TargetSystemKey">
+                            @foreach (var system in systems)
+                            {
+                                <option value="@system.Key">@system.DisplayName (@system.Key)</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>Target endpoint</label>
+                        <select class="input-md" @bind="target.TargetEndpointKey">
+                            @foreach (var endpoint in GetEndpoints(target.TargetSystemKey))
+                            {
+                                <option value="@endpoint.Key">@endpoint.DisplayName (@endpoint.Key)</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>Mapping reference</label>
+                        <input class="input-md" @bind="target.MappingReference" placeholder="Path or id for mapping config" />
+                    </div>
+                    <div class="form-row">
+                        <button type="button" class="btn-ghost btn-sm" @onclick="() => RemoveTarget(i)">Remove</button>
+                    </div>
+                </div>
+            }
+        }
+
+        <div class="mt-2">
+            <button type="button" class="btn-secondary btn-sm" @onclick="AddTarget">+ Add target</button>
+        </div>
+
+        <div class="mt-3">
+            <button type="button" class="btn-primary" @onclick="SaveRelationAsync" disabled="@isSaving">
+                @(isSaving ? "Saving..." : "Save relation")
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    private readonly List<EndpointRelation> relations = new();
+    private readonly List<ApiSystem> systems = new();
+    private EndpointRelation editingRelation = new() { Targets = new List<EndpointRelationTarget>() };
+    private bool isLoading = true;
+    private bool isSaving;
+    private string? errorMessage;
+
+    private Uri BuildApiUri(string relativePath)
+    {
+        var baseUri = new Uri(Nav.BaseUri);
+        return new Uri(baseUri, relativePath.TrimStart('/'));
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadAllAsync();
+    }
+
+    private async Task ReloadAllAsync()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            await LoadSystemsAsync();
+            await LoadRelationsAsync();
+            ResetEditingRelation();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Exception while loading data: {ex.Message}";
+            NotificationService.Instance.ShowError("Load failed", errorMessage);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadSystemsAsync()
+    {
+        var url = BuildApiUri(ApiRoutes.ApiSystemsBase);
+        var response = await Http.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadFromJsonAsync<List<ApiSystem>>();
+        systems.Clear();
+        systems.AddRange(result ?? new List<ApiSystem>());
+    }
+
+    private async Task LoadRelationsAsync()
+    {
+        var url = BuildApiUri(ApiRoutes.EndpointRelationsBase);
+        var response = await Http.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadFromJsonAsync<List<EndpointRelation>>();
+        relations.Clear();
+        relations.AddRange(result ?? new List<EndpointRelation>());
+    }
+
+    private void ResetEditingRelation()
+    {
+        var defaultSystem = systems.FirstOrDefault();
+        editingRelation = new EndpointRelation
+        {
+            SourceSystemKey = defaultSystem?.Key ?? string.Empty,
+            SourceEndpointKey = GetEndpoints(defaultSystem?.Key ?? string.Empty).FirstOrDefault()?.Key ?? string.Empty,
+            Targets = new List<EndpointRelationTarget>()
+        };
+    }
+
+    private IEnumerable<ApiEndpoint> GetEndpoints(string? systemKey)
+    {
+        if (string.IsNullOrWhiteSpace(systemKey))
+        {
+            return Enumerable.Empty<ApiEndpoint>();
+        }
+
+        var system = systems.FirstOrDefault(s => string.Equals(s.Key, systemKey, StringComparison.OrdinalIgnoreCase));
+        return system?.Endpoints ?? Enumerable.Empty<ApiEndpoint>();
+    }
+
+    private void OnSourceSystemChanged(ChangeEventArgs args)
+    {
+        var selected = args.Value?.ToString() ?? string.Empty;
+        editingRelation.SourceSystemKey = selected;
+        var firstEndpoint = GetEndpoints(selected).FirstOrDefault();
+        if (firstEndpoint is not null)
+        {
+            editingRelation.SourceEndpointKey = firstEndpoint.Key;
+        }
+        else
+        {
+            editingRelation.SourceEndpointKey = string.Empty;
+        }
+    }
+
+    private void OnTargetSystemChanged(int index, ChangeEventArgs args)
+    {
+        if (index < 0 || index >= editingRelation.Targets.Count)
+        {
+            return;
+        }
+
+        var selected = args.Value?.ToString() ?? string.Empty;
+        editingRelation.Targets[index].TargetSystemKey = selected;
+        var firstEndpoint = GetEndpoints(selected).FirstOrDefault();
+        editingRelation.Targets[index].TargetEndpointKey = firstEndpoint?.Key ?? string.Empty;
+    }
+
+    private void AddTarget()
+    {
+        var firstSystem = systems.FirstOrDefault();
+        var firstEndpoint = firstSystem?.Endpoints.FirstOrDefault();
+
+        editingRelation.Targets.Add(new EndpointRelationTarget
+        {
+            TargetSystemKey = firstSystem?.Key ?? string.Empty,
+            TargetEndpointKey = firstEndpoint?.Key ?? string.Empty,
+            Mappings = new List<FieldMapping>()
+        });
+    }
+
+    private void RemoveTarget(int index)
+    {
+        if (index < 0 || index >= editingRelation.Targets.Count)
+        {
+            return;
+        }
+
+        editingRelation.Targets.RemoveAt(index);
+    }
+
+    private void BeginEdit(EndpointRelation relation)
+    {
+        editingRelation = new EndpointRelation
+        {
+            SourceSystemKey = relation.SourceSystemKey,
+            SourceEndpointKey = relation.SourceEndpointKey,
+            Targets = relation.Targets
+                .Select(t => new EndpointRelationTarget
+                {
+                    TargetSystemKey = t.TargetSystemKey,
+                    TargetEndpointKey = t.TargetEndpointKey,
+                    MappingReference = t.MappingReference,
+                    Mappings = t.Mappings?.Select(m => new FieldMapping
+                    {
+                        SourceField = m.SourceField,
+                        TargetField = m.TargetField
+                    }).ToList() ?? new List<FieldMapping>()
+                })
+                .ToList()
+        };
+    }
+
+    private async Task SaveRelationAsync()
+    {
+        if (string.IsNullOrWhiteSpace(editingRelation.SourceSystemKey) ||
+            string.IsNullOrWhiteSpace(editingRelation.SourceEndpointKey))
+        {
+            errorMessage = "Source system and endpoint are required.";
+            NotificationService.Instance.ShowWarning("Validation", errorMessage);
+            return;
+        }
+
+        isSaving = true;
+        errorMessage = null;
+
+        try
+        {
+            var url = BuildApiUri(ApiRoutes.EndpointRelationsBase);
+            var response = await Http.PostAsJsonAsync(url, editingRelation);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                errorMessage = $"Failed to save relation: {(int)response.StatusCode} {response.ReasonPhrase}";
+                NotificationService.Instance.ShowError("Save failed", errorMessage);
+                return;
+            }
+
+            await LoadRelationsAsync();
+            NotificationService.Instance.ShowSuccess("Relation saved", "Endpoint relation stored successfully.");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Exception while saving relation: {ex.Message}";
+            NotificationService.Instance.ShowError("Save failed", errorMessage);
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private async Task DeleteRelationAsync(string systemKey, string endpointKey)
+    {
+        try
+        {
+            var url = BuildApiUri(ApiRoutes.EndpointRelation(systemKey, endpointKey));
+            var response = await Http.DeleteAsync(url);
+
+            if (!response.IsSuccessStatusCode && response.StatusCode != System.Net.HttpStatusCode.NoContent)
+            {
+                errorMessage = $"Failed to delete relation: {(int)response.StatusCode} {response.ReasonPhrase}";
+                NotificationService.Instance.ShowError("Delete failed", errorMessage);
+                return;
+            }
+
+            await LoadRelationsAsync();
+            NotificationService.Instance.ShowSuccess("Relation deleted", $"Removed relation for {systemKey}/{endpointKey}.");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Exception while deleting relation: {ex.Message}";
+            NotificationService.Instance.ShowError("Delete failed", errorMessage);
+        }
+    }
+}

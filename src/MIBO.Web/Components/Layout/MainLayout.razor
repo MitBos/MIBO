@@ -14,11 +14,17 @@
         </div>
 
         <nav class="app-nav">
-            <NavLink href="@AppRoutes.IntegrationsListRoot" class="nav-link" Match="NavLinkMatch.All">
+            <NavLink href='@AppRoutes.IntegrationsListRoot' class="nav-link" Match="NavLinkMatch.All">
                 Integrations
             </NavLink>
-            <NavLink href="@AppRoutes.EditIntegration('NewIntegration')" class="nav-link">
+            <NavLink href='@AppRoutes.EditIntegration("NewIntegration")' class="nav-link">
                 New integration
+            </NavLink>
+            <NavLink href='@AppRoutes.ApiSystems' class="nav-link">
+                API systems
+            </NavLink>
+            <NavLink href='@AppRoutes.EndpointRelations' class="nav-link">
+                Endpoint relations
             </NavLink>
         </nav>
     </header>

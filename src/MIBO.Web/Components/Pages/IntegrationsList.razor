@@ -1,4 +1,4 @@
-@* Summary: Landing page that lists stored integrations and allows navigation, duplication, and deletion. *@
+@* Summary: Combined integration workspace for systems, endpoints, relations, and configs. *@
 @page "/"
 @page "/app/integrations"
 @rendermode InteractiveServer
@@ -6,9 +6,10 @@
 @inject HttpClient Http
 @inject NavigationManager Nav
 
-<h1 class="page-title">Integrations</h1>
+<h1 class="page-title">Integration workspace</h1>
 <div class="page-subtitle">
-    Manage and run your integration configurations.
+    Browse systems, choose a method IN, link methods OUT, and open integration configs without switching screens.
+    <a class="btn-secondary btn-sm" href='@AppRoutes.EditIntegration("NewIntegration")'>+ New integration</a>
 </div>
 
 @if (!string.IsNullOrEmpty(errorMessage))
@@ -19,68 +20,250 @@
 }
 else if (isLoading)
 {
-    <p>Loading configurations...</p>
-}
-else if (names.Count == 0)
-{
-    <p>No configurations found yet.</p>
+    <p>Loading workspace...</p>
 }
 else
 {
+    <div class="split-grid">
+        <div class="panel">
+            <div class="panel-header">
+                <div>
+                    <div class="panel-title">API systems</div>
+                    <div class="panel-subtitle">System → endpoints → methods (pick a method IN).</div>
+                </div>
+            </div>
+
+            @if (apiSystems.Count == 0)
+            {
+                <p class="helper">No API systems found. Add systems first.</p>
+            }
+            else
+            {
+                @foreach (var system in apiSystems)
+                {
+                    <div class="system-block">
+                        <div class="system-header">
+                            <div>
+                                <div class="panel-title">@system.DisplayName (@system.Key)</div>
+                                <div class="panel-subtitle">@system.Description</div>
+                            </div>
+                            <span class="pill">@system.Endpoints.Count endpoint(s)</span>
+                        </div>
+
+                        <div class="endpoint-list">
+                            @foreach (var endpoint in system.Endpoints.OrderBy(e => e.HierarchyKey ?? e.DisplayName))
+                            {
+                                var isSelected = endpoint.SystemKey == selectedSystemKey && endpoint.Key == selectedEndpointKey;
+                                <button type="button"
+                                        class=@($"endpoint-row {(isSelected ? "endpoint-selected" : string.Empty)}")
+                                        @onclick="() => SelectEndpoint(endpoint.SystemKey, endpoint.Key)">
+                                    <div class="endpoint-meta">
+                                        <span class="method-pill">@endpoint.Method</span>
+                                        <div class="endpoint-title">@FormatHierarchy(endpoint)</div>
+                                        <div class="endpoint-path">@endpoint.Path</div>
+                                    </div>
+                                    <div class="endpoint-actions">
+                                        @if (!string.IsNullOrWhiteSpace(endpoint.SampleJson))
+                                        {
+                                            <span class="sample-indicator">Sample stored</span>
+                                        }
+                                    </div>
+                                </button>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <div>
+                    <div class="panel-title">Method IN → Methods OUT</div>
+                    <div class="panel-subtitle">Select an endpoint to manage its outgoing relations.</div>
+                </div>
+            </div>
+
+            @if (selectedEndpoint is null)
+            {
+                <p class="helper">Select a method IN from the list to configure its targets.</p>
+            }
+            else
+            {
+                <div class="method-card">
+                    <div>
+                        <div class="panel-title">@selectedEndpoint.DisplayName</div>
+                        <div class="panel-subtitle">
+                            <span class="method-pill">@selectedEndpoint.Method</span>
+                            <code>@selectedEndpoint.Path</code>
+                        </div>
+                    </div>
+                    <div class="helper">System: @selectedEndpoint.SystemKey</div>
+                    <div class="mt-2">
+                        <a class="btn-ghost btn-sm" href="@AppRoutes.ApiEndpointDetails(selectedEndpoint.SystemKey, selectedEndpoint.Key)">
+                            Open endpoint detail
+                        </a>
+                        <a class="btn-secondary btn-sm" href="@AppRoutes.EditIntegration($"{selectedEndpoint.SystemKey}_{selectedEndpoint.Key}")">
+                            Open integration editor
+                        </a>
+                    </div>
+                </div>
+
+                <div class="panel-subtitle mt-2"><strong>Methods OUT</strong></div>
+                <EditForm Model="editingRelation" OnValidSubmit="SaveRelationAsync">
+                    <DataAnnotationsValidator />
+                    <ObjectGraphDataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    @if (editingRelation.Targets.Count == 0)
+                    {
+                        <p class="helper">No outgoing methods yet. Add one below.</p>
+                    }
+
+                    @for (var i = 0; i < editingRelation.Targets.Count; i++)
+                    {
+                        var target = editingRelation.Targets[i];
+                        <div class="relation-row">
+                    <div class="form-grid">
+                        <div class="form-row">
+                            <label>Target system</label>
+                            <InputSelect class="input-md" @bind-Value="target.TargetSystemKey" @onchange="(args) => OnTargetSystemChanged(i, args)">
+                                <option value="">Select system</option>
+                                        @foreach (var system in apiSystems)
+                                        {
+                                            <option value="@system.Key">@system.DisplayName (@system.Key)</option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For="@(() => target.TargetSystemKey)" />
+                                </div>
+                                <div class="form-row">
+                                    <label>Target method</label>
+                                    <InputSelect class="input-lg" @bind-Value="target.TargetEndpointKey">
+                                        <option value="">Select endpoint</option>
+                                        @foreach (var endpoint in GetEndpoints(target.TargetSystemKey))
+                                        {
+                                            <option value="@endpoint.Key">@endpoint.DisplayName (@endpoint.Method @endpoint.Path)</option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For="@(() => target.TargetEndpointKey)" />
+                                </div>
+                                <div class="form-row">
+                                    <label>Mapping reference (optional)</label>
+                                <InputText class="input-md" @bind-Value="target.MappingReference" placeholder="Mappings/..." />
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <div class="panel-subtitle"><strong>Field mappings (optional)</strong></div>
+                            @if (target.Mappings.Count == 0)
+                            {
+                                <p class="helper">No mappings yet. Add one to transform fields.</p>
+                            }
+                            @for (var m = 0; m < target.Mappings.Count; m++)
+                            {
+                                var mapping = target.Mappings[m];
+                                <div class="form-grid">
+                                    <div class="form-row">
+                                        <label>Source field</label>
+                                        <InputText class="input-md" @bind-Value="mapping.SourceField" />
+                                    </div>
+                                    <div class="form-row">
+                                        <label>Target field</label>
+                                        <InputText class="input-md" @bind-Value="mapping.TargetField" />
+                                    </div>
+                                    <div class="form-row" style="align-self:flex-end;">
+                                        <button class="btn-ghost btn-sm" type="button" @onclick="() => RemoveMapping(i, m)">Remove</button>
+                                    </div>
+                                </div>
+                            }
+                            <button class="btn-secondary btn-sm" type="button" @onclick="() => AddMapping(i)">+ Add mapping</button>
+                        </div>
+                        <button class="btn-ghost btn-sm" type="button" @onclick="() => RemoveTarget(i)">Remove</button>
+                    </div>
+                }
+
+                    <div class="mt-2" style="display:flex; gap:0.5rem; align-items:center;">
+                        <button class="btn-secondary btn-sm" type="button" @onclick="AddTarget">+ Add target</button>
+                        <button class="btn-primary btn-sm" type="submit" disabled="@isSavingRelation">
+                            @(isSavingRelation ? "Saving..." : "Save relation")
+                        </button>
+                        @if (HasExistingRelation)
+                        {
+                            <button class="btn-ghost btn-sm" type="button" @onclick="DeleteRelationAsync">Delete relation</button>
+                        }
+                    </div>
+                </EditForm>
+            }
+        </div>
+    </div>
+
     <div class="panel">
         <div class="panel-header">
             <div>
-                <div class="panel-title">Existing integrations</div>
-                <div class="panel-subtitle">Click to edit, duplicate or remove.</div>
+                <div class="panel-title">Integration configs</div>
+                <div class="panel-subtitle">Open, duplicate, or remove existing configs.</div>
             </div>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th class="col-narrow">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            @foreach (var name in names)
-            {
-                <tr>
-                    <td>@name</td>
-                    <td>
-                        <div style="display:flex; gap:0.25rem;">
-                            <a class="btn-primary btn-sm" href="@AppRoutes.EditIntegration(name)">
-                                Open
-                            </a>
-                            <button class="btn-ghost btn-sm"
-                                    type="button"
-                                    @onclick="() => DuplicateAsync(name)">
-                                Duplicate
-                            </button>
-                            <button class="btn-ghost btn-sm"
-                                    type="button"
-                                    @onclick="() => DeleteAsync(name)">
-                                Remove
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            }
-            </tbody>
-        </table>
+        @if (names.Count == 0)
+        {
+            <p class="helper">No configurations found yet.</p>
+        }
+        else
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th class="col-narrow">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var name in names)
+                {
+                    <tr>
+                        <td>@name</td>
+                        <td>
+                            <div style="display:flex; gap:0.25rem;">
+                                <a class="btn-primary btn-sm" href="@AppRoutes.EditIntegration(name)">
+                                    Open
+                                </a>
+                                <button class="btn-ghost btn-sm"
+                                        type="button"
+                                        @onclick="() => DuplicateAsync(name)">
+                                    Duplicate
+                                </button>
+                                <button class="btn-ghost btn-sm"
+                                        type="button"
+                                        @onclick="() => DeleteAsync(name)">
+                                    Remove
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
     </div>
 }
 
-<p class="mt-3">
-    <a class="btn-secondary" href="@AppRoutes.EditIntegration('NewIntegration')">
-        + New integration
-    </a>
-</p>
-
 @code {
     private List<string> names = new();
+    private List<ApiSystem> apiSystems = new();
+    private List<EndpointRelation> relations = new();
+    private EndpointRelation editingRelation = new() { Targets = new List<EndpointRelationTarget>() };
+
     private bool isLoading = true;
+    private bool isSavingRelation;
     private string? errorMessage;
+
+    private string? selectedSystemKey;
+    private string? selectedEndpointKey;
+    private ApiEndpoint? selectedEndpoint;
+
+    private bool HasExistingRelation => relations.Any(r =>
+        string.Equals(r.SourceSystemKey, selectedSystemKey, StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(r.SourceEndpointKey, selectedEndpointKey, StringComparison.OrdinalIgnoreCase));
 
     private Uri BuildApiUri(string relativePath)
     {
@@ -90,7 +273,293 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await ReloadAsync();
+        await ReloadAllAsync();
+    }
+
+    private async Task ReloadAllAsync()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        await LoadIntegrationsAsync();
+        await LoadSystemsAsync();
+        await LoadRelationsAsync();
+
+        isLoading = false;
+    }
+
+    private async Task LoadIntegrationsAsync()
+    {
+        try
+        {
+            var url = BuildApiUri(ApiRoutes.IntegrationsBase);
+            var response = await Http.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                errorMessage = $"Backend returned {(int)response.StatusCode} {response.ReasonPhrase} while loading integrations.";
+                NotificationService.Instance.ShowError("Load failed", errorMessage);
+                return;
+            }
+
+            var result = await response.Content.ReadFromJsonAsync<List<string>>();
+            names = result ?? new List<string>();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Exception while loading integrations: {ex.Message}";
+            NotificationService.Instance.ShowError("Load failed", errorMessage);
+        }
+    }
+
+    private async Task LoadSystemsAsync()
+    {
+        try
+        {
+            var url = BuildApiUri(ApiRoutes.ApiSystemsBase);
+            var response = await Http.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+            {
+                NotificationService.Instance.ShowWarning("API catalog unavailable", $"Failed to load systems: {(int)response.StatusCode} {response.ReasonPhrase}");
+                return;
+            }
+
+            var systems = await response.Content.ReadFromJsonAsync<List<ApiSystem>>() ?? new List<ApiSystem>();
+            apiSystems = systems;
+            ReapplySelection();
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Instance.ShowWarning("API catalog unavailable", ex.Message);
+        }
+    }
+
+    private async Task LoadRelationsAsync()
+    {
+        try
+        {
+            var url = BuildApiUri(ApiRoutes.EndpointRelationsBase);
+            var response = await Http.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+            {
+                NotificationService.Instance.ShowWarning("Relations unavailable", $"Failed to load relations: {(int)response.StatusCode} {response.ReasonPhrase}");
+                return;
+            }
+
+            relations = await response.Content.ReadFromJsonAsync<List<EndpointRelation>>() ?? new List<EndpointRelation>();
+            ReapplySelection();
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Instance.ShowWarning("Relations unavailable", ex.Message);
+        }
+    }
+
+    private void ReapplySelection()
+    {
+        if (string.IsNullOrWhiteSpace(selectedSystemKey) || string.IsNullOrWhiteSpace(selectedEndpointKey))
+        {
+            return;
+        }
+
+        SelectEndpoint(selectedSystemKey, selectedEndpointKey);
+    }
+
+    private void SelectEndpoint(string systemKey, string endpointKey)
+    {
+        selectedSystemKey = systemKey;
+        selectedEndpointKey = endpointKey;
+        selectedEndpoint = apiSystems
+            .FirstOrDefault(s => string.Equals(s.Key, systemKey, StringComparison.OrdinalIgnoreCase))?
+            .Endpoints.FirstOrDefault(e => string.Equals(e.Key, endpointKey, StringComparison.OrdinalIgnoreCase));
+
+        var existing = relations.FirstOrDefault(r =>
+            string.Equals(r.SourceSystemKey, systemKey, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(r.SourceEndpointKey, endpointKey, StringComparison.OrdinalIgnoreCase));
+
+        editingRelation = existing is null
+            ? new EndpointRelation
+            {
+                SourceSystemKey = systemKey,
+                SourceEndpointKey = endpointKey,
+                Targets = new List<EndpointRelationTarget>()
+            }
+            : new EndpointRelation
+            {
+                SourceSystemKey = existing.SourceSystemKey,
+                SourceEndpointKey = existing.SourceEndpointKey,
+                Targets = existing.Targets.Select(t => new EndpointRelationTarget
+                {
+                    TargetSystemKey = t.TargetSystemKey,
+                    TargetEndpointKey = t.TargetEndpointKey,
+                    MappingReference = t.MappingReference,
+                    Mappings = t.Mappings?.Select(m => new FieldMapping
+                    {
+                        SourceField = m.SourceField,
+                        TargetField = m.TargetField
+                    }).ToList() ?? new List<FieldMapping>()
+                }).ToList()
+            };
+        editingRelation.Targets ??= new List<EndpointRelationTarget>();
+        foreach (var target in editingRelation.Targets)
+        {
+            target.Mappings ??= new List<FieldMapping>();
+        }
+    }
+
+    private void AddTarget()
+    {
+        editingRelation.Targets ??= new List<EndpointRelationTarget>();
+        editingRelation.Targets.Add(new EndpointRelationTarget());
+    }
+
+    private void RemoveTarget(int index)
+    {
+        if (editingRelation.Targets is null || index < 0 || index >= editingRelation.Targets.Count)
+        {
+            return;
+        }
+
+        editingRelation.Targets.RemoveAt(index);
+    }
+
+    private void OnTargetSystemChanged(int index, ChangeEventArgs args)
+    {
+        if (editingRelation.Targets is null || index < 0 || index >= editingRelation.Targets.Count)
+        {
+            return;
+        }
+
+        editingRelation.Targets[index].TargetSystemKey = args.Value?.ToString();
+        editingRelation.Targets[index].TargetEndpointKey = null;
+    }
+
+    private void AddMapping(int targetIndex)
+    {
+        if (editingRelation.Targets is null || targetIndex < 0 || targetIndex >= editingRelation.Targets.Count)
+        {
+            return;
+        }
+
+        editingRelation.Targets[targetIndex].Mappings ??= new List<FieldMapping>();
+        editingRelation.Targets[targetIndex].Mappings.Add(new FieldMapping());
+    }
+
+    private void RemoveMapping(int targetIndex, int mappingIndex)
+    {
+        if (editingRelation.Targets is null || targetIndex < 0 || targetIndex >= editingRelation.Targets.Count)
+        {
+            return;
+        }
+
+        var mappings = editingRelation.Targets[targetIndex].Mappings;
+        if (mappings is null || mappingIndex < 0 || mappingIndex >= mappings.Count)
+        {
+            return;
+        }
+
+        mappings.RemoveAt(mappingIndex);
+    }
+
+    private IEnumerable<ApiEndpoint> GetEndpoints(string? systemKey)
+    {
+        if (string.IsNullOrWhiteSpace(systemKey))
+        {
+            return Enumerable.Empty<ApiEndpoint>();
+        }
+
+        return apiSystems.FirstOrDefault(s => s.Key == systemKey)?.Endpoints
+               ?? Enumerable.Empty<ApiEndpoint>();
+    }
+
+    private async Task SaveRelationAsync()
+    {
+        if (editingRelation is null ||
+            string.IsNullOrWhiteSpace(editingRelation.SourceSystemKey) ||
+            string.IsNullOrWhiteSpace(editingRelation.SourceEndpointKey))
+        {
+            NotificationService.Instance.ShowWarning("Select a method", "Pick a method IN first.");
+            return;
+        }
+
+        if (editingRelation.Targets is null || editingRelation.Targets.Count == 0)
+        {
+            NotificationService.Instance.ShowWarning("Add a target", "Add at least one method OUT.");
+            return;
+        }
+
+        isSavingRelation = true;
+
+        try
+        {
+            var url = BuildApiUri(ApiRoutes.EndpointRelationsBase);
+            var response = await Http.PostAsJsonAsync(url, editingRelation);
+            if (!response.IsSuccessStatusCode)
+            {
+                NotificationService.Instance.ShowError("Save failed", $"API returned {(int)response.StatusCode} {response.ReasonPhrase}");
+                return;
+            }
+
+            var saved = await response.Content.ReadFromJsonAsync<EndpointRelation>();
+            UpsertRelation(saved ?? editingRelation);
+            NotificationService.Instance.ShowSuccess("Relation saved", "Updated outgoing methods.");
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Instance.ShowError("Save failed", ex.Message);
+        }
+        finally
+        {
+            isSavingRelation = false;
+        }
+    }
+
+    private async Task DeleteRelationAsync()
+    {
+        if (selectedSystemKey is null || selectedEndpointKey is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var url = BuildApiUri(ApiRoutes.EndpointRelation(selectedSystemKey, selectedEndpointKey));
+            var response = await Http.DeleteAsync(url);
+            if (!response.IsSuccessStatusCode && response.StatusCode != System.Net.HttpStatusCode.NoContent)
+            {
+                NotificationService.Instance.ShowError("Delete failed", $"API returned {(int)response.StatusCode} {response.ReasonPhrase}");
+                return;
+            }
+
+            relations.RemoveAll(r =>
+                string.Equals(r.SourceSystemKey, selectedSystemKey, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(r.SourceEndpointKey, selectedEndpointKey, StringComparison.OrdinalIgnoreCase));
+
+            SelectEndpoint(selectedSystemKey, selectedEndpointKey);
+            NotificationService.Instance.ShowSuccess("Relation removed", "Cleared outgoing methods.");
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Instance.ShowError("Delete failed", ex.Message);
+        }
+    }
+
+    private void UpsertRelation(EndpointRelation relation)
+    {
+        var index = relations.FindIndex(r =>
+            string.Equals(r.SourceSystemKey, relation.SourceSystemKey, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(r.SourceEndpointKey, relation.SourceEndpointKey, StringComparison.OrdinalIgnoreCase));
+
+        if (index >= 0)
+        {
+            relations[index] = relation;
+        }
+        else
+        {
+            relations.Add(relation);
+        }
+
+        SelectEndpoint(relation.SourceSystemKey, relation.SourceEndpointKey);
     }
 
     private async Task DuplicateAsync(string sourceName)
@@ -115,7 +584,7 @@ else
                 return;
             }
 
-            await ReloadAsync();
+            await LoadIntegrationsAsync();
             NotificationService.Instance.ShowSuccess("Integration duplicated", $"Copied '{sourceName}' to '{newName}'.");
         }
         catch (Exception ex)
@@ -140,7 +609,7 @@ else
                 return;
             }
 
-            await ReloadAsync();
+            await LoadIntegrationsAsync();
             NotificationService.Instance.ShowSuccess("Integration removed", $"Deleted '{name}'.");
         }
         catch (Exception ex)
@@ -150,33 +619,13 @@ else
         }
     }
 
-    private async Task ReloadAsync()
+    private static string FormatHierarchy(ApiEndpoint endpoint)
     {
-        isLoading = true;
-
-        try
+        if (!string.IsNullOrWhiteSpace(endpoint.HierarchyKey))
         {
-            var url = BuildApiUri(ApiRoutes.IntegrationsBase);
-            var response = await Http.GetAsync(url);
+            return endpoint.HierarchyKey.Replace("/", " / ");
+        }
 
-            if (!response.IsSuccessStatusCode)
-            {
-                errorMessage = $"Backend returned {(int)response.StatusCode} {response.ReasonPhrase} while calling {url}.";
-                NotificationService.Instance.ShowError("Load failed", errorMessage);
-                return;
-            }
-
-            var result = await response.Content.ReadFromJsonAsync<List<string>>();
-            names = result ?? new List<string>();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Exception while reloading integrations: {ex.Message}";
-            NotificationService.Instance.ShowError("Load failed", errorMessage);
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        return endpoint.DisplayName;
     }
 }

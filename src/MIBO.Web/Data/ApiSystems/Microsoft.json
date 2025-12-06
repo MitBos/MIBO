@@ -1,0 +1,32 @@
+{
+  "key": "Microsoft",
+  "displayName": "Microsoft Graph",
+  "description": "Sample customer endpoints for demos.",
+  "endpoints": [
+    {
+      "key": "CustomersList",
+      "systemKey": "Microsoft",
+      "displayName": "Customers - List",
+      "method": "GET",
+      "path": "/customers",
+      "hierarchyKey": "Customers/List",
+      "sampleJson": "{\n  \"value\": [\n    { \"id\": \"1\", \"displayName\": \"Contoso\", \"tenantId\": \"contoso.onmicrosoft.com\" }\n  ]\n}"
+    },
+    {
+      "key": "CustomerGetById",
+      "systemKey": "Microsoft",
+      "displayName": "Customers - Get by Id",
+      "method": "GET",
+      "path": "/customers/{id}",
+      "hierarchyKey": "Customers/GetById"
+    },
+    {
+      "key": "CustomerCreate",
+      "systemKey": "Microsoft",
+      "displayName": "Customers - Create",
+      "method": "POST",
+      "path": "/customers",
+      "hierarchyKey": "Customers/Create"
+    }
+  ]
+}

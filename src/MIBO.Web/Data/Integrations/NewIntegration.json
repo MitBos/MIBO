@@ -1,30 +1,13 @@
 {
   "name": "NewIntegration",
-  "integrationType": "Sync",
-  "facadePassThrough": true,
-  "apiKeyRequired": false,
+  "methodDirection": "In",
   "apiKey": null,
   "rateLimitPerMinute": null,
+  "apiSystemKey": "Microsoft",
+  "apiEndpointKey": "CustomersList",
   "sourceUrl": "https://jsonplaceholder.typicode.com/posts/1",
   "sourceMethod": "GET",
-  "targetUrl": null,
-  "targetMethod": "POST",
-  "mappings": [
-    {
-      "sourceField": "userId",
-      "targetField": "EmployeeId"
-    },
-    {
-      "sourceField": "id",
-      "targetField": "ExternalId"
-    },
-    {
-      "sourceField": "title",
-      "targetField": "Title"
-    },
-    {
-      "sourceField": "body",
-      "targetField": "Description"
-    }
-  ]
+  "inputSchemaJson": "{ \"value\": [{ \"id\": \"string\" }] }",
+  "outputSchemaJson": null,
+  "mappings": []
 }

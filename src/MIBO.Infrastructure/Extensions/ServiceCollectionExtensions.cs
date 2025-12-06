@@ -7,11 +7,19 @@ namespace MIBO.Infrastructure.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddMiboInfrastructure(this IServiceCollection services, string? storageDirectory = null)
+    public static IServiceCollection AddMiboInfrastructure(
+        this IServiceCollection services,
+        string? integrationStorageDirectory = null,
+        string? apiRegistryDirectory = null,
+        string? endpointRelationDirectory = null)
     {
-        storageDirectory ??= Path.Combine(AppContext.BaseDirectory, "Data", "Integrations");
+        integrationStorageDirectory ??= Path.Combine(AppContext.BaseDirectory, "Data", "Integrations");
+        apiRegistryDirectory ??= Path.Combine(AppContext.BaseDirectory, "Data", "ApiSystems");
+        endpointRelationDirectory ??= Path.Combine(AppContext.BaseDirectory, "Data", "EndpointRelations");
 
-        services.AddSingleton<IIntegrationConfigStorage>(_ => new FileIntegrationConfigStorage(storageDirectory));
+        services.AddSingleton<IIntegrationConfigStorage>(_ => new FileIntegrationConfigStorage(integrationStorageDirectory));
+        services.AddSingleton<IApiRegistryStorage>(_ => new FileApiRegistryStorage(apiRegistryDirectory));
+        services.AddSingleton<IEndpointRelationStorage>(_ => new FileEndpointRelationStorage(endpointRelationDirectory));
         services.AddHttpClient<IApiCaller, HttpApiCaller>();
         services.AddSingleton<IMappingEngine, BasicMappingEngine>();
 

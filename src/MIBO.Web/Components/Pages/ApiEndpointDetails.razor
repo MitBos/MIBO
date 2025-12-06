@@ -1,0 +1,170 @@
+@* Summary: Shows endpoint details and allows storing a sample JSON payload. *@
+@page "/app/api-systems/{SystemKey}/{EndpointKey}"
+@rendermode InteractiveServer
+
+@using MIBO.Domain.Models
+
+@inject HttpClient Http
+@inject NavigationManager Nav
+
+<h1 class="page-title">Endpoint details</h1>
+<div class="page-subtitle">
+    Review endpoint metadata and capture a sample JSON payload for mapping later.
+</div>
+
+<div class="mb-3">
+    <a href="@AppRoutes.ApiSystems" class="btn-ghost">
+        &larr; Back to API systems
+    </a>
+</div>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">
+        <strong>Error:</strong> @errorMessage
+    </div>
+}
+
+@if (isLoading)
+{
+    <div>Loading endpoint...</div>
+}
+else if (endpoint is null)
+{
+    <p>Endpoint not found.</p>
+}
+else
+{
+    <div class="panel">
+        <div class="panel-header">
+            <div>
+                <div class="panel-title">@endpoint.DisplayName</div>
+                <div class="panel-subtitle">@endpoint.HierarchyKey</div>
+            </div>
+            <span class="method-pill">@endpoint.Method</span>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-row">
+                <label>System key</label>
+                <input class="input-md" value="@endpoint.SystemKey" readonly />
+            </div>
+            <div class="form-row">
+                <label>Endpoint key</label>
+                <input class="input-md" value="@endpoint.Key" readonly />
+            </div>
+            <div class="form-row">
+                <label>Path</label>
+                <input class="input-md" value="@endpoint.Path" readonly />
+            </div>
+        </div>
+
+        <div class="form-row mt-3">
+            <label>Sample JSON payload</label>
+            <textarea class="input-lg" rows="12" @bind="@endpoint.SampleJson" placeholder="Paste sample JSON here"></textarea>
+            <div class="helper">For GET-like endpoints, paste an example response to help future mappings.</div>
+        </div>
+
+        <div class="mt-3">
+            <button type="button"
+                    class="btn-primary"
+                    @onclick="SaveAsync"
+                    disabled="@isSaving">
+                @(isSaving ? "Saving..." : "Save sample")
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public string SystemKey { get; set; } = string.Empty;
+    [Parameter] public string EndpointKey { get; set; } = string.Empty;
+
+    private ApiEndpoint? endpoint;
+    private bool isLoading = true;
+    private bool isSaving;
+    private string? errorMessage;
+
+    private Uri BuildApiUri(string relativePath)
+    {
+        var baseUri = new Uri(Nav.BaseUri);
+        return new Uri(baseUri, relativePath.TrimStart('/'));
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadEndpointAsync();
+    }
+
+    private async Task LoadEndpointAsync()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            var url = BuildApiUri(ApiRoutes.ApiEndpoint(SystemKey, EndpointKey));
+            var response = await Http.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                errorMessage = $"Failed to load endpoint: {(int)response.StatusCode} {response.ReasonPhrase}";
+                NotificationService.Instance.ShowError("Load failed", errorMessage);
+                endpoint = null;
+                return;
+            }
+
+            endpoint = await response.Content.ReadFromJsonAsync<ApiEndpoint>();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Exception while loading endpoint: {ex.Message}";
+            NotificationService.Instance.ShowError("Load failed", errorMessage);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        if (endpoint is null)
+        {
+            return;
+        }
+
+        isSaving = true;
+        errorMessage = null;
+
+        try
+        {
+            endpoint.SystemKey = SystemKey;
+            var url = BuildApiUri(ApiRoutes.ApiEndpoints(SystemKey));
+            var response = await Http.PostAsJsonAsync(url, endpoint);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                errorMessage = $"Failed to save endpoint: {(int)response.StatusCode} {response.ReasonPhrase}";
+                NotificationService.Instance.ShowError("Save failed", errorMessage);
+                return;
+            }
+
+            var saved = await response.Content.ReadFromJsonAsync<ApiEndpoint>();
+            if (saved is not null)
+            {
+                endpoint = saved;
+                NotificationService.Instance.ShowSuccess("Sample saved", "Endpoint sample payload stored.");
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Exception while saving endpoint: {ex.Message}";
+            NotificationService.Instance.ShowError("Save failed", errorMessage);
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+}

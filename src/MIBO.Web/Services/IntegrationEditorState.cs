@@ -14,6 +14,12 @@ public class IntegrationEditorState
     {
         Config = config;
         Config.Mappings ??= new List<FieldMapping>();
+        Config.SourceMethod ??= "GET";
+        Config.SourceUrl ??= string.Empty;
+        if (string.IsNullOrWhiteSpace(Config.MethodDirection))
+        {
+            Config.MethodDirection = "In";
+        }
     }
 
     public void AddMapping()
@@ -48,9 +54,14 @@ public class IntegrationEditorState
             isValid &= Validator.TryValidateObject(mapping, mappingContext, results, validateAllProperties: true);
         }
 
-        if (Config.IntegrationType == "Sync" && string.IsNullOrWhiteSpace(Config.TargetUrl))
+        var hasCatalogBinding = !string.IsNullOrWhiteSpace(Config.ApiSystemKey) &&
+                                !string.IsNullOrWhiteSpace(Config.ApiEndpointKey);
+        var hasManualBinding = !string.IsNullOrWhiteSpace(Config.SourceUrl) &&
+                               !string.IsNullOrWhiteSpace(Config.SourceMethod);
+
+        if (!hasCatalogBinding && !hasManualBinding)
         {
-            results.Add(new ValidationResult("Target URL is required for Sync integrations.", new[] { nameof(Config.TargetUrl) }));
+            results.Add(new ValidationResult("Select an API endpoint or provide URL + method.", new[] { nameof(Config.ApiSystemKey), nameof(Config.SourceUrl) }));
             isValid = false;
         }
 
@@ -58,4 +69,3 @@ public class IntegrationEditorState
         return isValid;
     }
 }
-

@@ -28,20 +28,16 @@ public static class IntegrationApiEndpoints
                 config = new IntegrationConfig
                 {
                     Name = name,
+                    MethodDirection = "In",
+                    ApiSystemKey = "Microsoft",
+                    ApiEndpointKey = "CustomersList",
                     SourceUrl = "https://jsonplaceholder.typicode.com/posts/1",
                     SourceMethod = "GET",
-                    TargetMethod = "POST",
-                    IntegrationType = "Sync",
-                    FacadePassThrough = true,
-                    Mappings = new List<FieldMapping>
-                    {
-                        new() { SourceField = "userId", TargetField = "EmployeeId" },
-                        new() { SourceField = "id",     TargetField = "ExternalId" },
-                        new() { SourceField = "title",  TargetField = "Title" },
-                        new() { SourceField = "body",   TargetField = "Description" }
-                    }
+                    InputSchemaJson = "{ \"value\": [{ \"id\": \"string\" }] }"
                 };
             }
+
+            config.Mappings ??= new List<FieldMapping>();
 
             return Results.Ok(config);
         });
@@ -55,6 +51,8 @@ public static class IntegrationApiEndpoints
                 return Results.BadRequest(new { error = "Name is required." });
             }
 
+            config.SourceMethod ??= "GET";
+            config.Mappings ??= new List<FieldMapping>();
             await storage.SaveAsync(config);
             return Results.Ok(config);
         });
@@ -63,20 +61,22 @@ public static class IntegrationApiEndpoints
             [FromBody] IntegrationConfig config,
             [FromServices] IIntegrationConfigStorage storage,
             [FromServices] IApiCaller apiCaller,
-            [FromServices] IMappingEngine mappingEngine) =>
+            [FromServices] IApiRegistryStorage apiRegistryStorage) =>
         {
             if (string.IsNullOrWhiteSpace(config.Name))
             {
                 return Results.BadRequest(new { error = "Name is required." });
             }
 
+            config.SourceMethod ??= "GET";
+            config.Mappings ??= new List<FieldMapping>();
             await storage.SaveAsync(config);
 
-            var request = new ApiCallRequest
+            var request = await ResolveSourceRequestAsync(config, apiRegistryStorage);
+            if (request is null)
             {
-                Url = config.SourceUrl,
-                Method = config.SourceMethod
-            };
+                return Results.BadRequest(new { error = "Source endpoint or URL is required." });
+            }
 
             var apiResult = await apiCaller.ExecuteAsync(request);
 
@@ -84,20 +84,7 @@ public static class IntegrationApiEndpoints
 
             if (apiResult.Success && !string.IsNullOrWhiteSpace(apiResult.ResponseBody))
             {
-                if (!config.FacadePassThrough && config.Mappings.Any())
-                {
-                    var mappingConfig = new MappingConfig
-                    {
-                        Name = config.Name,
-                        Mappings = config.Mappings
-                    };
-
-                    mapped = mappingEngine.Map(apiResult.ResponseBody!, mappingConfig);
-                }
-                else
-                {
-                    mapped = apiResult.ResponseBody;
-                }
+                mapped = apiResult.ResponseBody;
             }
 
             var response = new RunIntegrationResponse
@@ -136,20 +123,16 @@ public static class IntegrationApiEndpoints
             var copy = new IntegrationConfig
             {
                 Name = request.TargetName,
-                IntegrationType = source.IntegrationType,
-                FacadePassThrough = source.FacadePassThrough,
-                ApiKeyRequired = source.ApiKeyRequired,
                 ApiKey = source.ApiKey,
                 RateLimitPerMinute = source.RateLimitPerMinute,
+                MethodDirection = source.MethodDirection,
+                ApiSystemKey = source.ApiSystemKey,
+                ApiEndpointKey = source.ApiEndpointKey,
                 SourceUrl = source.SourceUrl,
-                SourceMethod = source.SourceMethod,
-                TargetUrl = source.TargetUrl,
-                TargetMethod = source.TargetMethod,
-                Mappings = source.Mappings.Select(m => new FieldMapping
-                {
-                    SourceField = m.SourceField,
-                    TargetField = m.TargetField
-                }).ToList()
+                SourceMethod = source.SourceMethod ?? "GET",
+                InputSchemaJson = source.InputSchemaJson,
+                OutputSchemaJson = source.OutputSchemaJson,
+                Mappings = new List<FieldMapping>()
             };
 
             await storage.SaveAsync(copy);
@@ -158,5 +141,37 @@ public static class IntegrationApiEndpoints
 
         return endpoints;
     }
-}
 
+    private static async Task<ApiCallRequest?> ResolveSourceRequestAsync(
+        IntegrationConfig config,
+        IApiRegistryStorage apiRegistryStorage)
+    {
+        var systemKey = config.ApiSystemKey;
+        var endpointKey = config.ApiEndpointKey;
+
+        if (!string.IsNullOrWhiteSpace(systemKey) &&
+            !string.IsNullOrWhiteSpace(endpointKey))
+        {
+            var endpoint = await apiRegistryStorage.LoadEndpointAsync(systemKey!, endpointKey!);
+            if (endpoint is not null)
+            {
+                return new ApiCallRequest
+                {
+                    Url = endpoint.Path,
+                    Method = endpoint.Method
+                };
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(config.SourceUrl))
+        {
+            return new ApiCallRequest
+            {
+                Url = config.SourceUrl,
+                Method = string.IsNullOrWhiteSpace(config.SourceMethod) ? "GET" : config.SourceMethod!
+            };
+        }
+
+        return null;
+    }
+}

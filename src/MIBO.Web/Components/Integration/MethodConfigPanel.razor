@@ -1,0 +1,98 @@
+@* Summary: Form section for configuring a single method (In/Out) tied to an API endpoint, with legacy URL/method fallback. *@
+@using MIBO.Domain.Models
+
+<div class="panel">
+    <div class="panel-header">
+        <div>
+            <div class="panel-title">Method configuration</div>
+            <div class="panel-subtitle">Bind to an API endpoint and describe input/output schemas.</div>
+        </div>
+    </div>
+
+    <div class="form-grid">
+        <div class="form-row">
+            <label>Direction</label><br />
+            <InputSelect class="input-md" @bind-Value="Config.MethodDirection">
+                <option value="In">In</option>
+                <option value="Out">Out</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => Config.MethodDirection)" />
+            <div class="helper">Choose whether this method is an entry point (In) or output (Out).</div>
+        </div>
+
+        <div class="form-row">
+            <label>API system</label><br />
+            <InputSelect class="input-md" @bind-Value="Config.ApiSystemKey" @onchange="OnSystemChanged">
+                <option value="">Select system</option>
+                @foreach (var system in ApiSystems)
+                {
+                    <option value="@system.Key">@system.DisplayName (@system.Key)</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => Config.ApiSystemKey)" />
+        </div>
+
+        <div class="form-row">
+            <label>API endpoint</label><br />
+            <InputSelect class="input-lg" @bind-Value="Config.ApiEndpointKey">
+                <option value="">Select endpoint</option>
+                @foreach (var endpoint in AvailableEndpoints)
+                {
+                    <option value="@endpoint.Key">@endpoint.DisplayName (@endpoint.Method @endpoint.Path)</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => Config.ApiEndpointKey)" />
+            @if (!string.IsNullOrWhiteSpace(Config.ApiEndpointKey))
+            {
+                <div class="helper">
+                    Bound to <code>@Config.ApiSystemKey / @Config.ApiEndpointKey</code> from the catalog.
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="form-grid mt-2">
+        <div class="form-row">
+            <label>URL (manual)</label><br />
+            <InputText class="input-lg" @bind-Value="Config.SourceUrl" />
+            <ValidationMessage For="@(() => Config.SourceUrl)" />
+            <div class="helper">Fallback URL; still required until every endpoint has a catalog binding.</div>
+        </div>
+
+        <div class="form-row">
+            <label>HTTP method</label><br />
+            <InputSelect @bind-Value="Config.SourceMethod">
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
+                <option value="PUT">PUT</option>
+                <option value="PATCH">PATCH</option>
+                <option value="DELETE">DELETE</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => Config.SourceMethod)" />
+        </div>
+    </div>
+
+    <div class="form-grid mt-2">
+        <div class="form-row">
+            <label>Input schema (optional)</label><br />
+            <InputTextArea class="input-lg" @bind-Value="Config.InputSchemaJson" rows="4" placeholder="Paste JSON schema or example payload" />
+        </div>
+        <div class="form-row">
+            <label>Output schema (optional)</label><br />
+            <InputTextArea class="input-lg" @bind-Value="Config.OutputSchemaJson" rows="4" placeholder="Paste JSON schema or example payload" />
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public IntegrationConfig Config { get; set; } = default!;
+    [Parameter] public List<ApiSystem> ApiSystems { get; set; } = new();
+
+    private IEnumerable<ApiEndpoint> AvailableEndpoints =>
+        ApiSystems.FirstOrDefault(s => s.Key == Config.ApiSystemKey)?.Endpoints ?? Enumerable.Empty<ApiEndpoint>();
+
+    private void OnSystemChanged(ChangeEventArgs _)
+    {
+        Config.ApiEndpointKey = null;
+    }
+}

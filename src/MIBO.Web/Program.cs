@@ -70,5 +70,7 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.MapIntegrationApiEndpoints();
+app.MapApiRegistryEndpoints();
+app.MapEndpointRelationApiEndpoints();
 
 app.Run();

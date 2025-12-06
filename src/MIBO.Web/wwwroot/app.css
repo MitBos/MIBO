@@ -413,6 +413,120 @@ button:disabled {
     margin-bottom: 0.75rem;
 }
 
+/* Endpoint registry */
+
+.endpoint-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.endpoint-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #f9fbff;
+}
+
+.endpoint-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.endpoint-title {
+    font-weight: 700;
+    color: #0b3a73;
+}
+
+.endpoint-path {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.endpoint-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.method-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(58, 139, 255, 0.15);
+    color: #0b3a73;
+    font-weight: 800;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+.sample-indicator {
+    color: #0b7a3a;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* Integration workspace */
+
+.split-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 1rem;
+}
+
+.system-block {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    background: #f8fbff;
+}
+
+.system-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.pill {
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(58, 139, 255, 0.12);
+    color: #0b3a73;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.endpoint-selected {
+    border-color: #3a8bff;
+    box-shadow: 0 0 0 2px rgba(58, 139, 255, 0.15);
+    background: #e9f3ff;
+}
+
+.method-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.75rem;
+    background: #f8fbff;
+}
+
+.relation-row {
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: #fdfefe;
+}
+
 /* Responsive */
 
 @media (max-width: 640px) {
@@ -424,6 +538,10 @@ button:disabled {
 
     .app-nav {
         width: 100%;
+    }
+
+    .split-grid {
+        grid-template-columns: 1fr;
     }
 }
 

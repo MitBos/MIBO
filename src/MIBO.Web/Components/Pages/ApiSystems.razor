@@ -1,0 +1,131 @@
+@* Summary: Lists API systems and their endpoints in a simple hierarchy with links to endpoint details. *@
+@page "/app/api-systems"
+@rendermode InteractiveServer
+
+@using MIBO.Domain.Models
+
+@inject HttpClient Http
+@inject NavigationManager Nav
+
+<h1 class="page-title">API systems</h1>
+<div class="page-subtitle">
+    Browse systems, their endpoints, and open an endpoint to view or store sample payloads.
+</div>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">
+        <strong>Error:</strong> @errorMessage
+    </div>
+}
+else if (isLoading)
+{
+    <div>Loading API systems...</div>
+}
+else if (systems.Count == 0)
+{
+    <p>No API systems defined yet.</p>
+}
+else
+{
+    @foreach (var system in systems)
+    {
+        <div class="panel">
+            <div class="panel-header">
+                <div>
+                    <div class="panel-title">@system.DisplayName (@system.Key)</div>
+                    <div class="panel-subtitle">@system.Description</div>
+                </div>
+                <div class="panel-subtitle">@system.Endpoints.Count endpoint(s)</div>
+            </div>
+
+            @if (system.Endpoints.Count == 0)
+            {
+                <p class="helper">No endpoints available for this system.</p>
+            }
+            else
+            {
+                <div class="endpoint-list">
+                    @foreach (var endpoint in system.Endpoints.OrderBy(e => e.HierarchyKey ?? e.DisplayName))
+                    {
+                        <div class="endpoint-row">
+                            <div class="endpoint-meta">
+                                <span class="method-pill">@endpoint.Method</span>
+                                <div class="endpoint-title">@FormatHierarchy(endpoint)</div>
+                                <div class="endpoint-path">@endpoint.Path</div>
+                            </div>
+                            <div class="endpoint-actions">
+                                @if (!string.IsNullOrWhiteSpace(endpoint.SampleJson))
+                                {
+                                    <span class="sample-indicator">Sample stored</span>
+                                }
+                                <a class="btn-ghost btn-sm" href="@AppRoutes.ApiEndpointDetails(endpoint.SystemKey, endpoint.Key)">
+                                    Details
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+}
+
+@code {
+    private readonly List<ApiSystem> systems = new();
+    private bool isLoading = true;
+    private string? errorMessage;
+
+    private Uri BuildApiUri(string relativePath)
+    {
+        var baseUri = new Uri(Nav.BaseUri);
+        return new Uri(baseUri, relativePath.TrimStart('/'));
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadAsync();
+    }
+
+    private async Task ReloadAsync()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        try
+        {
+            var url = BuildApiUri(ApiRoutes.ApiSystemsBase);
+            var response = await Http.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                errorMessage = $"Failed to load API systems: {(int)response.StatusCode} {response.ReasonPhrase}";
+                NotificationService.Instance.ShowError("Load failed", errorMessage);
+                return;
+            }
+
+            var result = await response.Content.ReadFromJsonAsync<List<ApiSystem>>();
+            systems.Clear();
+            systems.AddRange(result ?? new List<ApiSystem>());
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Exception while loading API systems: {ex.Message}";
+            NotificationService.Instance.ShowError("Load failed", errorMessage);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private static string FormatHierarchy(ApiEndpoint endpoint)
+    {
+        if (!string.IsNullOrWhiteSpace(endpoint.HierarchyKey))
+        {
+            return endpoint.HierarchyKey.Replace("/", " / ");
+        }
+
+        return endpoint.DisplayName;
+    }
+}
